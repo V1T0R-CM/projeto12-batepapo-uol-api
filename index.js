@@ -50,5 +50,11 @@ app.post("/participants", async(req, res) => {
     }
 });
 
+app.get("/participants", (req, res) => {
+    db.collection("participants").find().toArray().then(participants =>{
+        res.status(201).send(participants)
+    })
+});
+
 
 app.listen(5000);
