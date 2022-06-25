@@ -4,6 +4,7 @@ import { MongoClient } from "mongodb";
 import dotenv from 'dotenv';
 dotenv.config();
 import joi from 'joi'
+import dayjs from 'dayjs';
 
 const participantsSchema = joi.object({
     name: joi.string().required()
@@ -38,7 +39,8 @@ app.post("/participants", async(req, res) => {
     }
 
     try {
-        db.collection('participants').insertOne(participant).then(()=>{
+        db.collection('messeges').insertOne({from: participant.name, to: 'Todos', text: 'entra na sala...', type: 'status', time: dayjs().format('HH:mm:ss')})
+        db.collection('participants').insertOne({...participant, lastStatus: Date.now()}).then(()=>{
             res.sendStatus(201)
         });
     } 
