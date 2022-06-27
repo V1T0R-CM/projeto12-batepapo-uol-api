@@ -28,6 +28,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+setInterval(async()=>{
+    const users=await db.collection("participants").find().toArray();
+    for(let user of users){
+        if(Date.now()-user.lastStatus>10000){
+            db.collection("participants").remove(user);
+            db.collection('messages').insertOne({from: user.name, to: 'Todos', text: 'sai da sala...', type: 'status', time: dayjs().format('HH:mm:ss')})
+        }
+    }
+}, 15000);
 
 app.post("/participants", async(req, res) => {
     const participant = req.body;
