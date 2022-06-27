@@ -116,4 +116,23 @@ app.get("/messages", async(req, res)=>{
     }
 });
 
+app.post("/status", async(req, res)=>{
+    const {user} = req.headers;
+    const registered=await db.collection("participants").find({name : user}).toArray();
+
+    if(registered.length===0){
+        res.sendStatus(404)
+        return;
+    }
+
+    try {
+        db.collection('participants').updateOne({ "name" : user }, { $set: {"lastStatus": Date.now()}});
+        res.sendStatus(200)
+     } 
+     catch (error) {
+        console.log(error)
+        res.sendStatus(500);
+     }
+});
+
 app.listen(5000);
