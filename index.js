@@ -91,4 +91,29 @@ app.post("/messages", async(req, res)=>{
 
 });
 
+app.get("/messages", async(req, res)=>{
+    const {user} = req.headers;
+    const limit = parseInt(req.query.limit);
+    const messages= await db.collection("messages").find().toArray();
+
+    if(limit){
+        let lastmessages=[];
+        for(let i=messages.length-1; i>=0; i--){
+            if(messages[i].to===user || messages[i].to==="Todos"){
+                lastmessages.push(messages[i]);
+            }
+            if(lastmessages.length===limit){
+                lastmessages.reverse();
+                res.status(201).send(lastmessages);
+                return;
+            }
+        }
+        lastmessages.reverse();
+        res.status(201).send(lastmessages);
+    }
+    else{
+        res.status(201).send(messages.filter(message => message.to===user || message.to==="Todos"));
+    }
+});
+
 app.listen(5000);
